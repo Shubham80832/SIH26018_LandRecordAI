@@ -1,0 +1,172 @@
+@import "tailwindcss";
+
+/* ================================
+   GLOBAL
+================================ */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+
+/* ================================
+   DARK MODE
+================================ */
+
+html:not(.light) body {
+  background-color: #090b10;
+  color: #ffffff;
+}
+
+
+/* ================================
+   LIGHT MODE
+================================ */
+
+html.light body {
+  background-color: #ffffff;
+  color: #111827;
+}
+
+
+/* ================================
+   APP BACKGROUND
+================================ */
+
+.app-background {
+  background-color: #ffffff;
+  color: #111827;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+html:not(.light) .app-background {
+  background-color: #090b10;
+  color: #ffffff;
+}
+
+
+/* ================================
+   UPLOAD BOX
+================================ */
+
+.upload-box {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #111827;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease;
+}
+
+html:not(.light) .upload-box {
+  background-color: #11141b;
+  border-color: #334155;
+  color: #ffffff;
+}
+
+
+/* ================================
+   UPLOAD BOX HOVER
+================================ */
+
+.upload-box:hover {
+  border-color: #93c5fd;
+}
+
+html:not(.light) .upload-box:hover {
+  border-color: #3b82f6;
+}
+
+
+/* ================================
+   UPLOAD ICON
+================================ */
+
+.upload-icon {
+  background-color: #eff6ff;
+  border: 1px solid #dbeafe;
+  color: #2563eb;
+}
+
+html:not(.light) .upload-icon {
+  background-color: #172554;
+  border-color: #1e3a8a;
+  color: #60a5fa;
+}
+
+
+/* ================================
+   SECONDARY CARD
+================================ */
+
+.theme-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #111827;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease;
+}
+
+html:not(.light) .theme-card {
+  background-color: #11141b;
+  border-color: #334155;
+  color: #ffffff;
+}
+
+
+/* ================================
+   SCROLLBAR
+================================ */
+
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+html:not(.light) ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+.app-header {
+  border-bottom: 1px solid #e2e8f0;
+  transition: border-color 0.3s ease;
+}
+
+html:not(.light) .app-header {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+.theme-text-muted {
+  color: #64748b;
+}
+
+html:not(.light) .theme-text-muted {
+  color: #94a3b8;
+}
+
+.theme-text-subtle {
+  color: #64748b;
+}
+
+html:not(.light) .theme-text-subtle {
+  color: #94a3b8;
+}

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LandRecord AI | SIH 26018</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Inter, Arial, sans-serif;
+            background: #f5f7fb;
+            color: #172033;
+        }
+        header {
+            background: #101827;
+            color: white;
+            padding: 22px 7%;
+        }
+        header h1 { margin: 0 0 5px; }
+        header p { margin: 0; color: #c9d2e3; }
+        main {
+            width: min(1150px, 92%);
+            margin: 30px auto;
+        }
+        .card {
+            background: white;
+            border: 1px solid #e2e7ef;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 22px;
+            box-shadow: 0 5px 18px rgba(16, 24, 39, 0.05);
+        }
+        .upload {
+            border: 2px dashed #aeb9ca;
+            border-radius: 14px;
+            padding: 40px;
+            text-align: center;
+        }
+        input[type=file] { margin: 18px 0; }
+        button {
+            border: 0;
+            background: #2563eb;
+            color: white;
+            padding: 12px 22px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+        button:disabled { opacity: .6; cursor: wait; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+        .field {
+            border: 1px solid #e5e9f0;
+            padding: 14px;
+            border-radius: 10px;
+        }
+        .field label {
+            display: block;
+            font-size: 12px;
+            color: #69758a;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .field strong { font-size: 15px; }
+        .metric {
+            display: inline-block;
+            min-width: 160px;
+            padding: 16px;
+            margin-right: 10px;
+            border-radius: 10px;
+            background: #f1f5f9;
+        }
+        .metric b { display: block; font-size: 25px; margin-top: 5px; }
+        .high { color: #16803c; }
+        .medium { color: #9a6700; }
+        .low { color: #c62828; }
+        pre {
+            white-space: pre-wrap;
+            background: #101827;
+            color: #e7edf7;
+            padding: 18px;
+            border-radius: 10px;
+            overflow: auto;
+        }
+        .hidden { display: none; }
+        @media(max-width: 700px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>LandRecord AI</h1>
+    <p>SIH 26018 • Intelligent Land Record Digitization & Validation</p>
+</header>
+
+<main>
+    <section class="card">
+        <h2>Upload Land Record</h2>
+        <p>Start with a scanned PDF, JPG or PNG.</p>
+        <div class="upload">
+            <input id="file" type="file" accept=".pdf,.jpg,.jpeg,.png,.bmp,.tif,.tiff">
+            <br>
+            <button id="processBtn" onclick="processDocument()">Process Document</button>
+            <p id="message"></p>
+        </div>
+    </section>
+
+    <section id="result" class="card hidden">
+        <h2>Processing Result</h2>
+        <div id="metrics"></div>
+
+        <h3>Extracted Land Record</h3>
+        <div id="fields" class="grid"></div>
+
+        <h3>Validation</h3>
+        <div id="validation"></div>
+
+        <h3>OCR Text</h3>
+        <pre id="ocr"></pre>
+    </section>
+</main>
+
+<script>
+async function processDocument() {
+    const fileInput = document.getElementById("file");
+    const btn = document.getElementById("processBtn");
+    const message = document.getElementById("message");
+
+    if (!fileInput.files.length) {
+        message.textContent = "Please select a document first.";
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", fileInput.files[0]);
+
+    btn.disabled = true;
+    message.textContent = "Processing... PDF → image → preprocessing → OCR → extraction → validation";
+
+    try {
+        const response = await fetch("/api/process", {
+            method: "POST",
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.detail || "Processing failed.");
+        }
+
+        document.getElementById("result").classList.remove("hidden");
+
+        const v = data.validation;
+        const statusClass = v.status.toLowerCase();
+
+        document.getElementById("metrics").innerHTML = `
+            <div class="metric">Pages processed<b>${data.pages_processed}</b></div>
+            <div class="metric">Completeness<b>${v.completeness}%</b></div>
+            <div class="metric">Confidence<b class="${statusClass}">${v.confidence}%</b></div>
+            <div class="metric">Status<b class="${statusClass}">${v.status}</b></div>
+        `;
+
+        const labels = {
+            landowner_name: "Landowner Name",
+            survey_number: "Survey Number",
+            khasra_number: "Khasra Number",
+            khata_number: "Khata Number",
+            plot_area: "Plot Area",
+            village: "Village",
+            tehsil: "Tehsil",
+            district: "District",
+            land_classification: "Land Classification"
+        };
+
+        document.getElementById("fields").innerHTML =
+            Object.entries(data.fields).map(([key, value]) => `
+                <div class="field">
+                    <label>${labels[key] || key}</label>
+                    <strong>${value || "Not detected"}</strong>
+                </div>
+            `).join("");
+
+        document.getElementById("validation").innerHTML = `
+            ${v.errors.length ? "<b>Errors</b><ul>" + v.errors.map(x => `<li>${x}</li>`).join("") + "</ul>" : "<p class='high'>✓ No validation errors</p>"}
+            ${v.warnings.length ? "<b>Warnings</b><ul>" + v.warnings.map(x => `<li>${x}</li>`).join("") + "</ul>" : ""}
+        `;
+
+        document.getElementById("ocr").textContent = data.ocr_text || "No OCR text detected.";
+        message.textContent = "Processing complete.";
+    } catch (error) {
+        message.textContent = error.message;
+    } finally {
+        btn.disabled = false;
+    }
+}
+</script>
+</body>
+</html>
