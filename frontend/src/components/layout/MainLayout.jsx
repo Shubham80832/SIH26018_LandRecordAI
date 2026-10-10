@@ -1,4 +1,4 @@
-import Sidebar from "../sidebar/Sidebar"
+import Sidebar from "../Sidebar/Sidebar.jsx"
 
 function MainLayout({ children }) {
   return (
