@@ -7,6 +7,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
+
 from backend.services.document import pdf_to_images, prepare_image
 from backend.services.ocr import run_ocr
 from backend.services.extractor import extract_fields
@@ -24,14 +25,16 @@ app = FastAPI(
     title="SIH 26018 - Land Record AI",
     version="0.1.0"
 )
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:5174",
-        "https://shubham80832.github.io",
+         "https://sih-26018-land-record-ai.vercel.app",
+                "http://localhost:5173",
+                "http://localhost:5174",
+                "https://shubham80832.github.io",
     ],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
