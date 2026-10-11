@@ -159,7 +159,9 @@ function DocumentUpload({ onResult }) {
     formData.append("file", uploadFile)
 
     const response = await fetch(
-      "http://127.0.0.1:8000/api/process",
+      
+"https://landrecordai-backend.onrender.com/api/process",
+
       {
         method: "POST",
         body: formData,
