@@ -1,0 +1,9 @@
+﻿.venv/
+**/__pycache__/
+*.py[cod]
+.git/
+**/node_modules/
+.env
+.env.*
+uploads/
+processed/
